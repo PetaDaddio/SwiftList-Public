@@ -62,9 +62,76 @@ SwiftList/
 
 ## Architecture
 
+```mermaid
+flowchart TB
+    subgraph CLIENT["CLIENT LAYER"]
+        UI["SvelteKit Frontend<br><i>Svelte 5 Runes + TailwindCSS</i>"]
+        AUTH["Supabase Auth + Turnstile"]
+        WIZARD["3-Step Job Wizard<br><i>Upload → Settings → Review</i>"]
+    end
+
+    subgraph API["API LAYER — SvelteKit Server Routes"]
+        ENDPOINTS["30+ API Endpoints<br><i>Zod validation · Rate limiting</i>"]
+        CREDITS["Credit Economy<br><i>Atomic deductions · Auto-refund</i>"]
+        SECURITY["Security Middleware<br><i>CORS · CSP · HSTS · Prompt sanitization</i>"]
+    end
+
+    subgraph AI["AI INTELLIGENCE LAYER"]
+        direction LR
+        IMAGEN["☁️ Gemini 3 Imagen<br><i>Scene generation</i><br>~$0.004/image"]
+        FLASH["☁️ Gemini 2.5 Flash<br><i>Vision analysis · Style DNA</i><br>~$0.001/call"]
+        CLAUDE["Claude API<br><i>Classification · Monitoring</i>"]
+        RMBG["Replicate / fal.ai<br><i>Background removal</i><br>~$0.002/run"]
+    end
+
+    subgraph WORKERS["JOB PROCESSING LAYER"]
+        QUEUE["BullMQ Queue<br><i>Redis-backed · Priority tiers</i>"]
+        subgraph PIPELINE["6-Agent Background Removal Pipeline"]
+            direction LR
+            P1["Preprocess"] --> P2["Segment"] --> P3["Specialist"] --> P4["Enhance"] --> P5["Validate"] --> P6["Postprocess"]
+        end
+        ENGINES["Specialist Engines<br><i>Jewelry: gemstone/metal detection</i><br><i>Fabric: 8-agent texture/print analysis</i>"]
+    end
+
+    subgraph DATA["DATA & STORAGE LAYER"]
+        direction LR
+        PG["Supabase PostgreSQL<br><i>RLS deny-by-default</i>"]
+        STORAGE["Supabase Storage<br><i>Product images & results</i>"]
+        REDIS["Upstash Redis<br><i>Rate limiting · Cache</i>"]
+    end
+
+    subgraph INFRA["INFRASTRUCTURE"]
+        direction LR
+        RAILWAY["Railway<br><i>App + Workers</i>"]
+        CF["Cloudflare<br><i>CDN · WAF · DDoS</i>"]
+        GHA["GitHub Actions<br><i>CI: types, tests, audit</i>"]
+        SENTRY["Sentry + Pino<br><i>Error tracking · Logs</i>"]
+    end
+
+    CLIENT --> API
+    API --> AI
+    API --> WORKERS
+    WORKERS --> AI
+    WORKERS --> DATA
+    API --> DATA
+    DATA --> INFRA
+
+    style AI fill:#fef3c7,stroke:#f59e0b,stroke-width:2px,color:#000
+    style IMAGEN fill:#fde68a,stroke:#f59e0b,color:#000
+    style FLASH fill:#fde68a,stroke:#f59e0b,color:#000
+    style CLIENT fill:#e0f2fe,stroke:#0ea5e9,color:#000
+    style API fill:#f3e8ff,stroke:#a855f7,color:#000
+    style WORKERS fill:#dcfce7,stroke:#22c55e,color:#000
+    style DATA fill:#fce7f3,stroke:#ec4899,color:#000
+    style INFRA fill:#f1f5f9,stroke:#94a3b8,color:#000
 ```
-User Upload → SvelteKit API → BullMQ Queue → Railway Worker → AI Pipeline → Supabase Storage → Download
-```
+
+### Google Cloud Integration
+
+SwiftList uses two Google Cloud AI services as core infrastructure:
+
+- **Gemini 3 (Imagen)** — Generates lifestyle scenes from product photos (flat lays, studio setups, in-context shots). See [`src/routes/api/jobs/process/+server.ts`](apps/swiftlist-app-svelte/src/routes/api/jobs/process/+server.ts)
+- **Gemini 2.5 Flash** — Multimodal vision analysis for style transfer, fabric classification, and image quality scoring. See [`src/routes/api/ai/analyze-reference/+server.ts`](apps/swiftlist-app-svelte/src/routes/api/ai/analyze-reference/+server.ts)
 
 ### Background Removal Pipeline
 
@@ -78,10 +145,6 @@ LangGraph-inspired 6-agent DAG with product-type routing:
 - **Postprocess** — Format conversion, watermarking, ZIP packaging
 
 Quality threshold: 85%. Conditional retry on failure. Product types: jewelry, apparel, general.
-
-### Scene Generation
-
-Google Gemini 3 (Imagen) generates lifestyle scenes from product photos — flat lays, studio setups, in-context lifestyle shots. ~$0.004/image.
 
 ---
 
