@@ -33,7 +33,7 @@ const ALLOWED_ORIGINS = dev
 	: [
 			'https://swiftlist.app',
 			'https://www.swiftlist.app',
-			'https://swiftlist-app-svelte-production.up.railway.app'
+			'https://YOUR_RAILWAY_URL.up.railway.app'
 		];
 
 // ============================================================================
@@ -59,8 +59,8 @@ const SECURITY_HEADERS: Record<string, string> = {
 					"script-src 'self' 'unsafe-inline' https://challenges.cloudflare.com https://www.googletagmanager.com https://www.google-analytics.com",
 					"style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
 					"font-src 'self' https://fonts.gstatic.com",
-					"img-src 'self' data: blob: https://*.supabase.co https://login.swiftlist.app https://*.replicate.delivery https://replicate.delivery https://www.google-analytics.com https://www.googletagmanager.com",
-					"connect-src 'self' https://*.supabase.co wss://*.supabase.co https://login.swiftlist.app wss://login.swiftlist.app https://api.replicate.com https://gateway.ai.cloudflare.com https://challenges.cloudflare.com https://www.google-analytics.com https://*.google-analytics.com https://*.analytics.google.com",
+					"img-src 'self' data: blob: https://*.supabase.co https://YOUR_SUPABASE_DOMAIN https://*.replicate.delivery https://replicate.delivery https://www.google-analytics.com https://www.googletagmanager.com",
+					"connect-src 'self' https://*.supabase.co wss://*.supabase.co https://YOUR_SUPABASE_DOMAIN wss://YOUR_SUPABASE_DOMAIN https://api.replicate.com https://gateway.ai.cloudflare.com https://challenges.cloudflare.com https://www.google-analytics.com https://*.google-analytics.com https://*.analytics.google.com",
 					"frame-src https://challenges.cloudflare.com",
 					"frame-ancestors 'none'"
 				].join('; ')

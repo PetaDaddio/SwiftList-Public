@@ -286,7 +286,7 @@
 		<div class="testimonial-card" use:animateOnScroll>
 			<img
 				class="testimonial-avatar"
-				src="https://login.swiftlist.app/storage/v1/object/public/avatars/2d82056b-b599-451e-a732-bc3cb222dd20/1772508152691.JPG"
+				src="/testimonials/avatar-jim.jpg"
 				alt="Jim D."
 			/>
 			<blockquote class="testimonial-quote">
