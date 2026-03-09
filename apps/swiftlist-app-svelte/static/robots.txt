@@ -1,0 +1,14 @@
+User-agent: *
+Allow: /
+
+# Sitemaps
+Sitemap: https://swiftlist.app/sitemap.xml
+
+# Disallow authenticated/internal pages
+Disallow: /dashboard
+Disallow: /analytics
+Disallow: /jobs/
+Disallow: /auth/
+Disallow: /api/
+Disallow: /presets/create
+Disallow: /presets/favorites

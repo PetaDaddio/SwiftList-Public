@@ -1,0 +1,475 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SwiftList CMO Optimized Wireframe Prototype</title>
+    <!-- Load Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /*
+        Global Design System Rules based on JSON:
+        - Primary Background: #FFFFFF
+        - Secondary Background: #F9FAFB (bg-gray-50)
+        - Primary Action (Blurple): #4F46E5 (indigo-600)
+        - Text Dark: #1F2937 (gray-800)
+        - Generous Spacing
+        - Subtle Rounded Corners
+        */
+        :root {
+            --color-blurple: #4F46E5;
+            --color-text-dark: #1F2937;
+        }
+
+        /* Simulating Serif Font for H1/H2 (Artistry) */
+        .font-serif-mock {
+            font-family: ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
+        }
+
+        /* Simulating Sans-Serif for Body/UI (Utility) */
+        .font-sans-mock {
+            font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif;
+        }
+
+        /* Custom Blurple Button Style */
+        .btn-primary {
+            background-color: var(--color-blurple);
+            color: #FFFFFF;
+            font-size: 16px;
+            font-weight: 500;
+        }
+        .btn-primary:hover {
+            background-color: #4338CA; /* indigo-700 equivalent */
+        }
+        .text-blurple {
+            color: var(--color-blurple);
+        }
+
+        /* Custom Scrollbar for the main content area */
+        .content-area::-webkit-scrollbar {
+            width: 8px;
+        }
+        .content-area::-webkit-scrollbar-thumb {
+            background-color: #d1d5db; /* gray-300 */
+            border-radius: 4px;
+        }
+        
+    </style>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'blurple': 'var(--color-blurple)',
+                    }
+                }
+            }
+        }
+
+        // --- JS for Prototype Logic ---
+
+        // Function to render the correct page view
+        function renderPage(pageId) {
+            // Hide all pages
+            document.querySelectorAll('.page-view').forEach(p => p.classList.add('hidden'));
+
+            // Show the requested page
+            const targetPage = document.getElementById(pageId);
+            if (targetPage) {
+                targetPage.classList.remove('hidden');
+            }
+
+            // Update navigation active state
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.classList.remove('bg-gray-200', 'font-medium', 'text-blurple');
+                link.classList.add('text-gray-600');
+            });
+            const activeLink = document.querySelector(`[data-page="${pageId}"]`);
+            if (activeLink) {
+                activeLink.classList.add('bg-gray-200', 'font-medium', 'text-blurple');
+                activeLink.classList.remove('text-gray-600');
+            }
+        }
+
+        // Initialize to Dashboard view
+        window.onload = () => {
+            renderPage('dashboard');
+        };
+    </script>
+</head>
+<body class="bg-gray-50 h-screen overflow-hidden font-sans-mock">
+
+    <!-- Main Layout: Left Sidebar + Content Area -->
+    <div class="flex h-full">
+
+        <!-- Left Sidebar (Desktop Navigation) - CMO VETO: Added Upgrade CTA -->
+        <div class="w-64 bg-white border-r border-gray-200 flex flex-col p-6 shadow-lg">
+            
+            <!-- Branding Area -->
+            <div class="mb-8 pb-4 border-b border-gray-100">
+                <h1 class="font-serif-mock text-3xl font-bold text-gray-800">SwiftList</h1>
+            </div>
+
+            <!-- Create New Listing Button (The Blurple FAB equivalent) -->
+            <button onclick="renderPage('create-job')" class="btn-primary flex items-center justify-center p-4 rounded-lg mb-8 transition duration-150 shadow-md hover:shadow-lg">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2" viewBox="0 0 24 24" fill="currentColor">
+                    <path fill-rule="evenodd" d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25zM12.75 9a.75.75 0 00-1.5 0v2.25H9a.75.75 0 000 1.5h2.25v2.25a.75.75 0 001.5 0v-2.25H15a.75.75 0 000-1.5h-2.25V9z" clip-rule="evenodd" />
+                </svg>
+                Create New <span class="ml-1 text-lg">✨</span>
+            </button>
+            
+            <!-- Navigation Links (UPDATED FOR TEAM/ASSETS FOCUS) -->
+            <nav class="space-y-2 text-base">
+                <a href="#" onclick="renderPage('dashboard')" data-page="dashboard" class="nav-link flex items-center p-3 rounded-lg transition duration-150 text-gray-600 hover:bg-gray-100">Dashboard</a>
+                <a href="#" onclick="renderPage('library')" data-page="library" class="nav-link flex items-center p-3 rounded-lg transition duration-150 text-gray-600 hover:bg-gray-100">Assets</a>
+                <a href="#" onclick="renderPage('team')" data-page="team" class="nav-link flex items-center p-3 rounded-lg transition duration-150 text-gray-600 hover:bg-gray-100">Team & Share</a>
+                <a href="#" onclick="renderPage('settings')" data-page="settings" class="nav-link flex items-center p-3 rounded-lg transition duration-150 text-gray-600 hover:bg-gray-100">Settings</a>
+                <a href="#" onclick="renderPage('help')" data-page="help" class="nav-link flex items-center p-3 rounded-lg transition duration-150 text-gray-600 hover:bg-gray-100">Help & Support</a>
+            </nav>
+
+            <!-- CMO Addition: Persistent Upgrade CTA (For Free/Trial Users) -->
+            <div class="mt-8 mb-6 p-4 bg-blurple/10 rounded-lg text-center border border-blurple/20">
+                <p class="text-sm font-bold text-blurple">Unlock Unlimited Potential</p>
+                <p class="text-xs text-gray-600 mb-3">Upgrade to Pro for team access & video generation.</p>
+                <button class="w-full py-2 text-sm bg-blurple text-white rounded-md hover:bg-indigo-700 transition duration-150 shadow-md">
+                    Go Pro Now 🚀
+                </button>
+            </div>
+            <!-- End CMO Addition -->
+
+             <!-- User Placeholder (Bottom Left) -->
+             <div class="pt-6 border-t border-gray-100">
+                <div class="flex items-center space-x-3">
+                    <div class="h-8 w-8 bg-pink-500 rounded-full flex items-center justify-center text-white text-sm font-medium">SA</div>
+                    <div class="text-sm">
+                        <p class="font-medium text-gray-800">Samantha Artisan</p>
+                        <p class="text-xs text-gray-500">Pro Monthly</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content Area -->
+        <div class="flex-1 overflow-y-auto content-area p-8">
+
+            <!-- --- 1. USER DASHBOARD (Desktop) --- -->
+            <div id="dashboard" class="page-view space-y-8">
+                <h1 class="font-serif-mock text-4xl font-bold text-gray-800">Your Creative Hub</h1>
+                
+                <!-- HEYGEN INSPIRED WORKFLOW SHORTCUTS -->
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                    
+                    <div class="lg:col-span-1 space-y-6">
+                        <div class="bg-white p-6 rounded-xl shadow-md space-y-4">
+                            <p class="font-sans-mock text-base text-gray-600">Hello, <span class="font-medium text-gray-800">[User Name]</span>, get back to creating!</p>
+                            
+                            <div class="flex space-x-4">
+                                <button onclick="renderPage('create-job')" class="btn-primary w-full py-3 rounded-lg shadow-lg">
+                                    Start New Job ✨
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Time Saved Card (Core Value Prop) -->
+                        <div class="bg-white p-6 rounded-xl shadow-md border-t-4 border-blurple">
+                            <p class="font-sans-mock text-sm text-gray-500">Productivity KPI</p>
+                            <p class="font-serif-mock text-3xl font-bold text-gray-800">Time Saved This Week</p>
+                            <p class="font-sans-mock text-5xl font-extrabold text-blurple mt-1">3.5 hrs</p>
+                        </div>
+
+                        <!-- CMO Addition: AI Generation Usage Meter -->
+                        <div class="bg-white p-6 rounded-xl shadow-md border-t-4 border-gray-300">
+                            <p class="font-sans-mock text-sm text-gray-500">Current Plan Utilization</p>
+                            <p class="font-serif-mock text-2xl font-bold text-gray-800 mb-3">AI Generations Used</p>
+                            
+                            <div class="h-3 bg-red-200 rounded-full">
+                                <!-- Usage Bar (80% used in this example) -->
+                                <div class="h-3 bg-red-500 rounded-full" style="width: 80%;"></div>
+                            </div>
+
+                            <p class="text-sm text-gray-800 mt-2">
+                                48 / 60 listings generated this month.
+                            </p>
+                            <a href="#" class="text-xs text-red-500 font-medium hover:underline block mt-1">
+                                Running low? Buy more capacity.
+                            </a>
+                        </div>
+                        <!-- End CMO Addition -->
+
+                    </div>
+
+                    <!-- Recent Projects/Asset Feed (Right 70% Feel) -->
+                    <div class="lg:col-span-2 space-y-6">
+                        <h2 class="font-serif-mock text-3xl font-bold text-gray-800">Quick Start Workflows</h2>
+                        
+                        <!-- Workflow Shortcuts Grid (HEYGEN MODEL) -->
+                        <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
+                            <div class="bg-white p-4 rounded-lg shadow-md space-y-2 cursor-pointer hover:bg-gray-50 transition duration-150 border border-gray-200">
+                                <p class="text-xl">📷</p>
+                                <h3 class="font-sans-mock text-base font-bold text-gray-800">Photo-to-Listing</h3>
+                                <p class="text-xs text-gray-500">Generate full listing assets from one image.</p>
+                            </div>
+                            <div class="bg-white p-4 rounded-lg shadow-md space-y-2 cursor-pointer hover:bg-gray-50 transition duration-150 border border-gray-200">
+                                <p class="text-xl">🏷️</p>
+                                <h3 class="font-sans-mock text-base font-bold text-gray-800">SEO Bulk Optimize</h3>
+                                <p class="text-xs text-gray-500">Upload CSV to optimize titles & tags.</p>
+                            </div>
+                            <div class="bg-white p-4 rounded-lg shadow-md space-y-2 cursor-pointer hover:bg-gray-50 transition duration-150 border border-gray-200">
+                                <p class="text-xl">🎥</p>
+                                <h3 class="font-sans-mock text-base font-bold text-gray-800">TikTok Video Generator</h3>
+                                <p class="text-xs text-gray-500">Turn asset bundles into 15-second clips.</p>
+                            </div>
+                        </div>
+
+                        <h2 class="font-serif-mock text-3xl font-bold text-gray-800 pt-4">Recent Projects</h2>
+                        
+                        <!-- Masonry Grid Placeholder -->
+                        <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
+                            <!-- Placeholder Project Cards -->
+                            <div class="bg-white p-4 rounded-lg shadow-md space-y-2">
+                                <div class="h-32 bg-gray-200 rounded-lg"></div>
+                                <h3 class="font-sans-mock text-sm font-bold text-gray-800">Silver Leaf Ring</h3>
+                                <p class="text-xs text-gray-500">Assets: 12 | Style: Minimalist</p>
+                                <button class="w-full py-2 text-xs text-blurple border border-blurple rounded-lg hover:bg-blurple hover:text-white transition duration-150">View Assets</button>
+                            </div>
+                            <div class="bg-white p-4 rounded-lg shadow-md space-y-2">
+                                <div class="h-32 bg-gray-200 rounded-lg"></div>
+                                <h3 class="font-sans-mock text-sm font-bold text-gray-800">Boho Planter Set</h3>
+                                <p class="text-xs text-gray-500">Assets: 24 | Style: Artisan Chic</p>
+                                <button class="w-full py-2 text-xs text-blurple border border-blurple rounded-lg hover:bg-blurple hover:text-white transition duration-150">View Assets</button>
+                            </div>
+                            <div class="bg-white p-4 rounded-lg shadow-md space-y-2">
+                                <div class="h-32 bg-gray-200 rounded-lg"></div>
+                                <h3 class="font-sans-mock text-sm font-bold text-gray-800">Custom Pet Portrait</h3>
+                                <p class="text-xs text-gray-500">Assets: 8 | Style: Whimsical</p>
+                                <button class="w-full py-2 text-xs text-blurple border border-blurple rounded-lg hover:bg-blurple hover:text-white transition duration-150">View Assets</button>
+                            </div>
+                            <!-- Empty State Card (for new users) -->
+                            <div class="bg-gray-100 p-6 rounded-lg shadow-inner col-span-full text-center">
+                                <p class="text-gray-500 font-serif-mock text-lg">No projects yet?</p>
+                                <p class="text-gray-600 font-medium">Start one now and buy back your creativity!</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- --- 2. INITIATE JOB / UPLOAD PAGE (Desktop) --- -->
+            <div id="create-job" class="page-view hidden space-y-8">
+                <h1 class="font-serif-mock text-4xl font-bold text-gray-800">Create New Listing</h1>
+
+                <!-- Split-Screen Workflow -->
+                <div class="flex space-x-8 h-[70vh]">
+                    <!-- Left Panel (40%) - Input -->
+                    <div class="w-2/5 bg-white p-8 rounded-xl shadow-lg space-y-6 overflow-y-auto">
+                        
+                        <h2 class="font-serif-mock text-3xl font-bold text-gray-800 mb-6">Input: The Spark</h2>
+
+                        <!-- Drag & Drop Upload Zone -->
+                        <div class="border-4 border-dashed border-blurple/50 bg-gray-50/50 p-12 rounded-lg text-center cursor-pointer hover:bg-gray-100 transition duration-150">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 mx-auto text-blurple/70 mb-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22a2 2 0 001.664.89H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
+                            </svg>
+                            <p class="font-serif-mock text-xl font-medium text-gray-800">Drop your photo here to <span class="text-blurple">bloom.</span></p>
+                            <p class="text-xs text-gray-500 mt-2">Max file size 10MB (JPG, PNG, WEBP)</p>
+                        </div>
+                        
+                        <button class="w-full py-2 text-sm text-gray-600 border border-gray-300 rounded-lg bg-gray-100 hover:bg-gray-200 transition duration-150">
+                            Or Browse Files
+                        </button>
+
+                        <div class="space-y-4">
+                            <label for="product_name" class="font-sans-mock text-sm font-medium text-gray-800">Product Name</label>
+                            <input type="text" id="product_name" placeholder="E.g., Handmade Blue Ceramic Mug" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-blurple focus:border-blurple transition duration-150">
+                        </div>
+
+                        <div class="space-y-4">
+                            <label for="keywords" class="font-sans-mock text-sm font-medium text-gray-800">Keywords (Comma Separated)</label>
+                            <textarea id="keywords" rows="3" placeholder="E.g., cottagecore decor, birthday gift, coffee mug" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-blurple focus:border-blurple transition duration-150"></textarea>
+                        </div>
+
+                        <button class="btn-primary w-full py-4 text-lg rounded-xl shadow-xl hover:shadow-2xl">
+                            Generate Assets & Listing ✨
+                        </button>
+
+                    </div>
+
+                    <!-- Right Panel (60%) - Preview & Settings -->
+                    <div class="w-3/5 bg-gray-100 p-8 rounded-xl shadow-lg space-y-6 overflow-y-auto">
+                        <h2 class="font-serif-mock text-3xl font-bold text-gray-800">Settings: The Blueprint</h2>
+
+                        <!-- Preview Placeholder -->
+                        <div class="h-48 bg-white rounded-lg border border-gray-300 flex items-center justify-center text-gray-500 font-medium">
+                            Live Asset Preview Placeholder
+                        </div>
+
+                        <!-- Saved Brand Style Selector (HEYGEN INSPIRED) -->
+                        <div class="bg-white p-5 rounded-lg shadow-md space-y-4">
+                            <h3 class="font-serif-mock text-xl font-medium text-gray-800 border-b pb-2 mb-3">Saved Brand Styles</h3>
+                            <label for="brand_style" class="font-sans-mock text-base text-gray-700 block">Select Style for Descriptions/Tags</label>
+                            <select id="brand_style" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-blurple focus:border-blurple transition duration-150 font-sans-mock">
+                                <option>Artisan Chic (Default)</option>
+                                <option>Minimalist Scandinavian</option>
+                                <option>Whimsical Cottagecore</option>
+                                <option>Industrial Modern</option>
+                                <option>-- Create New Style --</option>
+                            </select>
+                        </div>
+
+                        <!-- Generation Toggle Switches - CMO VETO: Added PRO gating to Video -->
+                        <div class="bg-white p-5 rounded-lg shadow-md space-y-4">
+                            <h3 class="font-serif-mock text-xl font-medium text-gray-800 border-b pb-2 mb-3">Generation Controls</h3>
+                            
+                            <!-- CMO Modification: Gated Video Feature -->
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center space-x-2">
+                                    <label for="gen_video_pro" class="font-sans-mock text-base text-gray-400 line-through">Generate TikTok-Ready Video Clip</label>
+                                    <span class="px-2 py-0.5 text-xs font-bold text-yellow-800 bg-yellow-200 rounded-full">PRO</span>
+                                </div>
+                                <button class="py-1 px-3 text-xs bg-blurple text-white rounded-md hover:bg-indigo-700 transition duration-150" onclick="alert('Redirect to Upgrade Page')">Upgrade</button>
+                            </div>
+                            <!-- End CMO Modification -->
+
+                            <div class="flex items-center justify-between">
+                                <label for="optimize_seo" class="font-sans-mock text-base text-gray-700">Auto-optimize SEO Tags & Title</label>
+                                <input type="checkbox" id="optimize_seo" class="h-5 w-5 rounded-full text-blurple border-gray-300 focus:ring-blurple" checked>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- --- 3. ASSET LIBRARY (Desktop) --- -->
+            <div id="library" class="page-view hidden space-y-8">
+                <h1 class="font-serif-mock text-4xl font-bold text-gray-800">Your Asset Library</h1>
+
+                <!-- Search and Filters -->
+                <div class="flex space-x-4 bg-white p-4 rounded-xl shadow-md items-center">
+                    <input type="text" placeholder="Search by name or keyword..." class="flex-1 p-3 border border-gray-300 rounded-lg focus:ring-blurple focus:border-blurple transition duration-150 font-sans-mock text-sm">
+                    <button class="px-4 py-2 text-sm text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-100">All</button>
+                    <button class="px-4 py-2 text-sm text-blurple border border-blurple bg-gray-100 rounded-lg">Photos</button>
+                    <button class="px-4 py-2 text-sm text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-100">Videos</button>
+                    <button class="px-4 py-2 text-sm text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-100">Descriptions</button>
+                </div>
+
+                <!-- Asset Grid -->
+                <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-6">
+                    <!-- Asset Card 1 -->
+                    <div class="bg-white rounded-lg shadow-md overflow-hidden">
+                        <div class="h-40 bg-gray-200"></div>
+                        <div class="p-3 space-y-1">
+                            <p class="font-sans-mock text-xs font-bold text-gray-800">Mug_01_SEO_Crop.jpg</p>
+                            <p class="text-xs text-gray-500">Style: Minimalist</p>
+                            <button class="w-full py-1 text-xs text-blurple border border-blurple rounded-md hover:bg-blurple hover:text-white transition duration-150 mt-2">Download & Edit</button>
+                        </div>
+                    </div>
+                    <!-- Asset Card 2 -->
+                    <div class="bg-white rounded-lg shadow-md overflow-hidden">
+                        <div class="h-40 bg-gray-200"></div>
+                        <div class="p-3 space-y-1">
+                            <p class="font-sans-mock text-xs font-bold text-gray-800">Mug_01_Video.mp4</p>
+                            <p class="text-xs text-gray-500">Style: Artisan Chic</p>
+                            <button class="w-full py-1 text-xs text-blurple border border-blurple rounded-md hover:bg-blurple hover:text-white transition duration-150 mt-2">Download & Edit</button>
+                        </div>
+                    </div>
+                     <!-- Asset Card 3 (Description Text) -->
+                     <div class="bg-white rounded-lg shadow-md overflow-hidden">
+                        <div class="h-40 bg-blurple/20 flex items-center justify-center p-4">
+                            <p class="text-blurple font-serif-mock text-sm italic">"The essence of cozy mornings..."</p>
+                        </div>
+                        <div class="p-3 space-y-1">
+                            <p class="font-sans-mock text-xs font-bold text-gray-800">Mug_01_Desc_SEO.txt</p>
+                            <p class="text-xs text-gray-500">Style: Whimsical</p>
+                            <button class="w-full py-1 text-xs text-blurple border border-blurple rounded-md hover:bg-blurple hover:text-white transition duration-150 mt-2">Copy & Edit</button>
+                        </div>
+                    </div>
+                    <!-- Placeholder cards for demonstration -->
+                    <div class="bg-white h-56 rounded-lg shadow-md"></div>
+                    <div class="bg-white h-56 rounded-lg shadow-md"></div>
+                    <div class="bg-white h-56 rounded-lg shadow-md"></div>
+                    <div class="bg-white h-56 rounded-lg shadow-md"></div>
+                </div>
+
+                <!-- Pagination -->
+                <div class="flex justify-center pt-4">
+                    <span class="font-sans-mock text-sm text-gray-600">Page 1 of 12</span>
+                </div>
+            </div>
+            
+            <!-- --- 4. TEAM & SHARE (New Page) --- -->
+            <div id="team" class="page-view hidden space-y-8">
+                <h1 class="font-serif-mock text-4xl font-bold text-gray-800">Team & Collaboration</h1>
+                
+                <div class="bg-white p-8 rounded-xl shadow-lg space-y-6">
+                    <h2 class="font-serif-mock text-2xl font-bold text-gray-800 border-b pb-3">Invite Team Member</h2>
+                    <p class="font-sans-mock text-base text-gray-600">Scale your shop by inviting an assistant or partner to manage assets.</p>
+                    <div class="flex space-x-4">
+                        <input type="email" placeholder="assistant@example.com" class="flex-1 p-3 border border-gray-300 rounded-lg font-sans-mock">
+                        <button class="btn-primary py-3 px-6 rounded-lg">Send Invite</button>
+                    </div>
+                    
+                    <h2 class="font-serif-mock text-2xl font-bold text-gray-800 border-b pb-3 pt-6">Current Team</h2>
+                    <div class="space-y-3">
+                        <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                            <p class="font-sans-mock text-base text-gray-800">Samantha Artisan (Owner)</p>
+                            <p class="text-sm text-blurple">Admin</p>
+                        </div>
+                        <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                            <p class="font-sans-mock text-base text-gray-800">Jane Smith</p>
+                            <p class="text-sm text-gray-500">Editor</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- --- 5. SETTINGS (Updated for Brand Kit) --- -->
+            <div id="settings" class="page-view hidden space-y-8">
+                <h1 class="font-serif-mock text-4xl font-bold text-gray-800">Settings</h1>
+                
+                <div class="bg-white p-8 rounded-xl shadow-lg space-y-6">
+                    <h2 class="font-serif-mock text-2xl font-bold text-gray-800 border-b pb-3">Profile Information</h2>
+                    <!-- Input Fields -->
+                    <div class="space-y-4">
+                        <label class="font-sans-mock text-sm font-medium text-gray-800 block">Name</label>
+                        <input type="text" value="Samantha Artisan" class="w-full p-3 border border-gray-300 rounded-lg font-sans-mock">
+                    </div>
+                    <div class="space-y-4">
+                        <label class="font-sans-mock text-sm font-medium text-gray-800 block">Shop URL</label>
+                        <input type="text" value="etsy.com/shop/samanthaartisan" class="w-full p-3 border border-gray-300 rounded-lg font-sans-mock">
+                    </div>
+                    <button class="btn-primary py-3 px-6 rounded-lg">Save Profile</button>
+                    
+                    <!-- NEW BRAND KIT SECTION -->
+                    <h2 class="font-serif-mock text-2xl font-bold text-gray-800 border-b pb-3 pt-6">Brand Kit Management</h2>
+                    <p class="font-sans-mock text-base text-gray-600">Define your shop's voice, tone, and visual rules for consistent AI output.</p>
+                    <div class="space-y-4 pt-2">
+                        <label class="font-sans-mock text-sm font-medium text-gray-800 block">Default Brand Voice Tone</label>
+                        <textarea rows="3" placeholder="E.g., Elegant, slightly whimsical, focusing on sustainability and heirloom quality." class="w-full p-3 border border-gray-300 rounded-lg font-sans-mock">Artisan Chic: Minimalist, handcrafted, natural textures.</textarea>
+                    </div>
+                    <button class="py-3 px-6 text-blurple border border-blurple rounded-lg hover:bg-blurple hover:text-white transition duration-150">Update Brand Kit</button>
+
+
+                    <h2 class="font-serif-mock text-2xl font-bold text-gray-800 border-b pb-3 pt-6">Subscription & Billing</h2>
+                    <p class="font-sans-mock text-base text-gray-600">Current Plan: <span class="font-medium text-blurple">Pro Monthly</span></p>
+                    <button class="py-3 px-6 text-blurple border border-blurple rounded-lg hover:bg-blurple hover:text-white transition duration-150">Manage Subscription</button>
+                </div>
+            </div>
+            
+            <!-- --- 6. HELP & SUPPORT (Placeholder) --- -->
+            <div id="help" class="page-view hidden space-y-8">
+                <h1 class="font-serif-mock text-4xl font-bold text-gray-800">Help & Support</h1>
+                <div class="bg-white p-8 rounded-xl shadow-lg space-y-6">
+                    <p class="font-sans-mock text-base text-gray-600">Placeholder for Help Center / Documentation / Community Forum links, essential for empowering makers (as seen in HeyGen's "Learning" section).</p>
+                </div>
+            </div>
+
+
+        </div>
+    </div>
+</body>
+</html>
+
+

@@ -1,0 +1,412 @@
+# SwiftList Lifeguard - CloudWatch Alarms Configuration
+# This CloudFormation template creates all monitoring alarms
+
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'SwiftList Lifeguard - CloudWatch Alarms for Production Monitoring'
+
+Parameters:
+  ErrorAnalyzerLambdaArn:
+    Type: String
+    Description: ARN of the Error Analyzer Lambda function
+
+  SlackWebhookUrl:
+    Type: String
+    Description: Slack webhook URL for critical alerts
+    NoEcho: true
+
+  AppName:
+    Type: String
+    Default: 'swiftlist-app-production'
+    Description: Name of the Amplify application
+
+  LogGroupName:
+    Type: String
+    Default: '/aws/amplify/swiftlist-app-production'
+    Description: CloudWatch Logs group name
+
+Resources:
+
+  # ====================
+  # ALARM 1: API Error Rate Spike
+  # ====================
+  APIErrorRateAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmName: SwiftList-API-Error-Rate-Spike
+      AlarmDescription: 'Triggers when API returns > 5 errors in 5 minutes'
+      MetricName: 4XXError
+      Namespace: AWS/ApiGateway
+      Statistic: Sum
+      Period: 300  # 5 minutes
+      EvaluationPeriods: 1
+      Threshold: 5
+      ComparisonOperator: GreaterThanThreshold
+      TreatMissingData: notBreaching
+      ActionsEnabled: true
+      AlarmActions:
+        - !Ref ErrorAnalyzerSNSTopic
+      OKActions:
+        - !Ref ErrorAnalyzerSNSTopic
+
+  API5XXErrorAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmName: SwiftList-API-5XX-Error-Spike
+      AlarmDescription: 'Triggers when API returns > 3 server errors in 5 minutes'
+      MetricName: 5XXError
+      Namespace: AWS/ApiGateway
+      Statistic: Sum
+      Period: 300
+      EvaluationPeriods: 1
+      Threshold: 3
+      ComparisonOperator: GreaterThanThreshold
+      TreatMissingData: notBreaching
+      ActionsEnabled: true
+      AlarmActions:
+        - !Ref ErrorAnalyzerSNSTopic
+
+  # ====================
+  # ALARM 2: Database Query Failures
+  # ====================
+  DatabaseConnectionErrorAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmName: SwiftList-Database-Connection-Failures
+      AlarmDescription: 'Triggers when Supabase connection errors exceed 3 in 5 minutes'
+      MetricName: DatabaseConnectionErrors
+      Namespace: SwiftList/Database
+      Statistic: Sum
+      Period: 300
+      EvaluationPeriods: 1
+      Threshold: 3
+      ComparisonOperator: GreaterThanThreshold
+      TreatMissingData: notBreaching
+      ActionsEnabled: true
+      AlarmActions:
+        - !Ref ErrorAnalyzerSNSTopic
+
+  # Metric filter for database errors
+  DatabaseErrorMetricFilter:
+    Type: AWS::Logs::MetricFilter
+    Properties:
+      FilterName: SwiftList-Database-Errors
+      LogGroupName: !Ref LogGroupName
+      FilterPattern: '[time, request_id, level = ERROR, msg = "*database*" || msg = "*supabase*" || msg = "*connection*"]'
+      MetricTransformations:
+        - MetricName: DatabaseConnectionErrors
+          MetricNamespace: SwiftList/Database
+          MetricValue: '1'
+          DefaultValue: 0
+
+  # ====================
+  # ALARM 3: n8n Workflow Failures
+  # ====================
+  N8NWorkflowFailureAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmName: SwiftList-n8n-Workflow-Failures
+      AlarmDescription: 'Triggers when > 10 n8n workflow failures in 15 minutes'
+      MetricName: WorkflowFailures
+      Namespace: SwiftList/n8n
+      Statistic: Sum
+      Period: 900  # 15 minutes
+      EvaluationPeriods: 1
+      Threshold: 10
+      ComparisonOperator: GreaterThanThreshold
+      TreatMissingData: notBreaching
+      ActionsEnabled: true
+      AlarmActions:
+        - !Ref ErrorAnalyzerSNSTopic
+
+  # Metric filter for n8n workflow failures
+  N8NFailureMetricFilter:
+    Type: AWS::Logs::MetricFilter
+    Properties:
+      FilterName: SwiftList-n8n-Failures
+      LogGroupName: !Ref LogGroupName
+      FilterPattern: '[time, request_id, level, msg = "*workflow*failed*" || msg = "*n8n*error*"]'
+      MetricTransformations:
+        - MetricName: WorkflowFailures
+          MetricNamespace: SwiftList/n8n
+          MetricValue: '1'
+          DefaultValue: 0
+
+  # ====================
+  # ALARM 4: Credit Deduction Failures (CRITICAL)
+  # ====================
+  CreditDeductionFailureAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmName: SwiftList-CRITICAL-Credit-Deduction-Failure
+      AlarmDescription: 'CRITICAL: Credit deduction failed - immediate attention required'
+      MetricName: CreditDeductionErrors
+      Namespace: SwiftList/Billing
+      Statistic: Sum
+      Period: 60  # 1 minute
+      EvaluationPeriods: 1
+      Threshold: 1  # Even 1 failure is critical
+      ComparisonOperator: GreaterThanOrEqualToThreshold
+      TreatMissingData: notBreaching
+      ActionsEnabled: true
+      AlarmActions:
+        - !Ref CriticalAlertSNSTopic  # Separate topic for critical alerts
+        - !Ref ErrorAnalyzerSNSTopic
+
+  # Metric filter for credit deduction errors
+  CreditDeductionErrorMetricFilter:
+    Type: AWS::Logs::MetricFilter
+    Properties:
+      FilterName: SwiftList-Credit-Deduction-Errors
+      LogGroupName: !Ref LogGroupName
+      FilterPattern: '[time, request_id, level = ERROR, msg = "*deduct_credits*" || msg = "*credit*failed*"]'
+      MetricTransformations:
+        - MetricName: CreditDeductionErrors
+          MetricNamespace: SwiftList/Billing
+          MetricValue: '1'
+          DefaultValue: 0
+
+  # ====================
+  # ALARM 5: High Response Time
+  # ====================
+  HighResponseTimeAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmName: SwiftList-High-Response-Time
+      AlarmDescription: 'Triggers when average response time > 2 seconds'
+      MetricName: ResponseTime
+      Namespace: SwiftList/Performance
+      Statistic: Average
+      Period: 300
+      EvaluationPeriods: 2  # Must be sustained for 10 minutes
+      Threshold: 2000  # 2 seconds in milliseconds
+      ComparisonOperator: GreaterThanThreshold
+      TreatMissingData: notBreaching
+      ActionsEnabled: true
+      AlarmActions:
+        - !Ref ErrorAnalyzerSNSTopic
+
+  # Metric filter for response time
+  ResponseTimeMetricFilter:
+    Type: AWS::Logs::MetricFilter
+    Properties:
+      FilterName: SwiftList-Response-Time
+      LogGroupName: !Ref LogGroupName
+      FilterPattern: '[time, request_id, level, msg = "*response_time*", duration]'
+      MetricTransformations:
+        - MetricName: ResponseTime
+          MetricNamespace: SwiftList/Performance
+          MetricValue: '$duration'
+          DefaultValue: 0
+
+  # ====================
+  # ALARM 6: Memory Usage High
+  # ====================
+  HighMemoryUsageAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmName: SwiftList-High-Memory-Usage
+      AlarmDescription: 'Triggers when Lambda memory usage > 80%'
+      MetricName: MemoryUtilization
+      Namespace: AWS/Lambda
+      Statistic: Average
+      Period: 300
+      EvaluationPeriods: 2
+      Threshold: 80
+      ComparisonOperator: GreaterThanThreshold
+      TreatMissingData: notBreaching
+      ActionsEnabled: true
+      AlarmActions:
+        - !Ref ErrorAnalyzerSNSTopic
+
+  # ====================
+  # ALARM 7: Job Queue Backlog
+  # ====================
+  JobQueueBacklogAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmName: SwiftList-Job-Queue-Backlog
+      AlarmDescription: 'Triggers when > 50 jobs pending for > 10 minutes'
+      MetricName: PendingJobs
+      Namespace: SwiftList/Jobs
+      Statistic: Average
+      Period: 600  # 10 minutes
+      EvaluationPeriods: 1
+      Threshold: 50
+      ComparisonOperator: GreaterThanThreshold
+      TreatMissingData: notBreaching
+      ActionsEnabled: true
+      AlarmActions:
+        - !Ref ErrorAnalyzerSNSTopic
+
+  # Metric filter for pending jobs
+  PendingJobsMetricFilter:
+    Type: AWS::Logs::MetricFilter
+    Properties:
+      FilterName: SwiftList-Pending-Jobs-Count
+      LogGroupName: !Ref LogGroupName
+      FilterPattern: '[time, request_id, level, msg = "*jobs_pending*", count]'
+      MetricTransformations:
+        - MetricName: PendingJobs
+          MetricNamespace: SwiftList/Jobs
+          MetricValue: '$count'
+          DefaultValue: 0
+
+  # ====================
+  # SNS Topics
+  # ====================
+  ErrorAnalyzerSNSTopic:
+    Type: AWS::SNS::Topic
+    Properties:
+      TopicName: SwiftList-Error-Analyzer-Notifications
+      DisplayName: SwiftList Error Analyzer
+      Subscription:
+        - Endpoint: !GetAtt ErrorAnalyzerLambdaFunction.Arn
+          Protocol: lambda
+
+  CriticalAlertSNSTopic:
+    Type: AWS::SNS::Topic
+    Properties:
+      TopicName: SwiftList-Critical-Alerts
+      DisplayName: SwiftList Critical Alerts (Page Rick)
+      Subscription:
+        - Endpoint: !Ref SlackWebhookUrl
+          Protocol: https
+
+  # ====================
+  # EventBridge Rule (connects alarms to Lambda)
+  # ====================
+  ErrorAnalyzerEventRule:
+    Type: AWS::Events::Rule
+    Properties:
+      Name: SwiftList-Error-Analyzer-Trigger
+      Description: 'Triggers Error Analyzer Lambda on CloudWatch alarms'
+      EventPattern:
+        source:
+          - aws.cloudwatch
+        detail-type:
+          - CloudWatch Alarm State Change
+        detail:
+          alarmName:
+            - prefix: SwiftList-
+      State: ENABLED
+      Targets:
+        - Arn: !Ref ErrorAnalyzerLambdaArn
+          Id: ErrorAnalyzerLambda
+
+  # Lambda permission for EventBridge
+  ErrorAnalyzerLambdaInvokePermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      FunctionName: !Ref ErrorAnalyzerLambdaArn
+      Action: lambda:InvokeFunction
+      Principal: events.amazonaws.com
+      SourceArn: !GetAtt ErrorAnalyzerEventRule.Arn
+
+  # ====================
+  # Dashboard
+  # ====================
+  SwiftListMonitoringDashboard:
+    Type: AWS::CloudWatch::Dashboard
+    Properties:
+      DashboardName: SwiftList-Production-Monitoring
+      DashboardBody: !Sub |
+        {
+          "widgets": [
+            {
+              "type": "metric",
+              "properties": {
+                "metrics": [
+                  ["AWS/ApiGateway", "4XXError", {"stat": "Sum"}],
+                  [".", "5XXError", {"stat": "Sum"}]
+                ],
+                "period": 300,
+                "stat": "Sum",
+                "region": "${AWS::Region}",
+                "title": "API Errors",
+                "yAxis": {"left": {"min": 0}}
+              }
+            },
+            {
+              "type": "metric",
+              "properties": {
+                "metrics": [
+                  ["SwiftList/Database", "DatabaseConnectionErrors", {"stat": "Sum"}]
+                ],
+                "period": 300,
+                "stat": "Sum",
+                "region": "${AWS::Region}",
+                "title": "Database Errors",
+                "yAxis": {"left": {"min": 0}}
+              }
+            },
+            {
+              "type": "metric",
+              "properties": {
+                "metrics": [
+                  ["SwiftList/n8n", "WorkflowFailures", {"stat": "Sum"}]
+                ],
+                "period": 900,
+                "stat": "Sum",
+                "region": "${AWS::Region}",
+                "title": "n8n Workflow Failures",
+                "yAxis": {"left": {"min": 0}}
+              }
+            },
+            {
+              "type": "metric",
+              "properties": {
+                "metrics": [
+                  ["SwiftList/Billing", "CreditDeductionErrors", {"stat": "Sum", "color": "#ff0000"}]
+                ],
+                "period": 60,
+                "stat": "Sum",
+                "region": "${AWS::Region}",
+                "title": "Credit Deduction Errors (CRITICAL)",
+                "yAxis": {"left": {"min": 0}}
+              }
+            },
+            {
+              "type": "metric",
+              "properties": {
+                "metrics": [
+                  ["SwiftList/Performance", "ResponseTime", {"stat": "Average"}]
+                ],
+                "period": 300,
+                "stat": "Average",
+                "region": "${AWS::Region}",
+                "title": "Average Response Time (ms)",
+                "yAxis": {"left": {"min": 0}}
+              }
+            },
+            {
+              "type": "metric",
+              "properties": {
+                "metrics": [
+                  ["SwiftList/Jobs", "PendingJobs", {"stat": "Average"}]
+                ],
+                "period": 600,
+                "stat": "Average",
+                "region": "${AWS::Region}",
+                "title": "Pending Jobs Queue",
+                "yAxis": {"left": {"min": 0}}
+              }
+            }
+          ]
+        }
+
+Outputs:
+  ErrorAnalyzerSNSTopicArn:
+    Description: ARN of the Error Analyzer SNS Topic
+    Value: !Ref ErrorAnalyzerSNSTopic
+    Export:
+      Name: !Sub '${AWS::StackName}-ErrorAnalyzerSNSTopicArn'
+
+  CriticalAlertSNSTopicArn:
+    Description: ARN of the Critical Alert SNS Topic
+    Value: !Ref CriticalAlertSNSTopic
+    Export:
+      Name: !Sub '${AWS::StackName}-CriticalAlertSNSTopicArn'
+
+  DashboardURL:
+    Description: URL to the CloudWatch Dashboard
+    Value: !Sub 'https://console.aws.amazon.com/cloudwatch/home?region=${AWS::Region}#dashboards:name=SwiftList-Production-Monitoring'

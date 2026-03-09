@@ -1,0 +1,11 @@
+# SwiftList Lifeguard - Slack Button Handler Requirements
+
+# HTTP requests
+requests==2.31.0
+
+# AWS SDK
+boto3==1.34.0
+botocore==1.34.0
+
+# JSON/data handling
+python-dateutil==2.8.2

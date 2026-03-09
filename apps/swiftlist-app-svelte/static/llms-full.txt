@@ -1,0 +1,101 @@
+# SwiftList — Full Documentation for LLMs
+
+> AI-powered product image automation SaaS for e-commerce sellers
+
+## Product Overview
+
+SwiftList automates product image workflows for makers in the creator economy. Users upload product images and SwiftList applies AI treatments: background removal, upscaling, lifestyle scene generation, and batch processing. Output images are automatically sized for 6 major e-commerce marketplaces.
+
+### Target Users
+- Etsy sellers (jewelry, vintage clothing, handmade goods)
+- Shopify store owners
+- Amazon FBA sellers
+- Poshmark and eBay resellers
+- Small e-commerce businesses needing professional product photography
+
+### Problem Solved
+Small sellers spend hours manually editing product photos or pay $5-25 per image for professional editing. SwiftList automates this at a fraction of the cost using AI, delivering marketplace-ready images in seconds instead of hours.
+
+## Features
+
+### CleanEdge Intelligence (Background Removal)
+A proprietary 7-agent AI pipeline for background removal:
+1. Initial segmentation using Bria RMBG 2.0
+2. Edge detection and refinement
+3. Jewelry-specific edge processing (handles reflective surfaces, fine chains, gemstones)
+4. Shadow generation for natural product placement
+5. Quality validation
+6. Multi-format export
+
+CleanEdge produces edge-perfect cutouts that preserve fine details like jewelry prongs, fabric textures, and translucent materials.
+
+### Lifestyle Scene Generation
+Uses Google Imagen 3 (~$0.004/image) to generate contextual lifestyle backgrounds:
+- Product is placed into AI-generated scenes matching the seller's brand aesthetic
+- Scenes are guided by "Vibes" — style presets that define the visual treatment
+- Examples: rustic wooden table, minimalist white studio, vintage market stall
+
+### Vibes Marketplace
+A community marketplace for AI style presets:
+- 38+ curated seed presets across categories: Jewelry, Vintage, Fashion, Home, 3D Print
+- Users can create and publish their own Vibes
+- Sparks Royalty System: creators earn credits when others use their published Vibes
+- Vibes define: background style, lighting, mood, color palette, and scene context
+
+### Batch Processing
+- Process multiple product images in a single job
+- Consistent styling across all images using the same Vibe
+- Automatic marketplace-specific sizing
+
+### Multi-Marketplace Export
+Automatic image sizing for:
+- Etsy (2000x2000px, 1:1 ratio)
+- Shopify (2048x2048px)
+- Amazon (2000x2000px, white background option)
+- eBay (1600x1600px)
+- Poshmark (1200x1600px, 3:4 ratio)
+- Facebook Marketplace (1200x1200px)
+
+## Pricing
+
+| Plan | Price | Credits | Best For |
+|------|-------|---------|----------|
+| Starter | Free | Limited | Trying the service |
+| Pro | $19/month | Regular usage | Active sellers |
+| Business | $49/month | High volume | Power sellers |
+
+Credits are used per image processed. Different AI treatments cost different amounts of credits.
+
+## Technical Architecture
+
+- **Frontend**: SvelteKit with Svelte 5 (Runes), TailwindCSS
+- **Backend**: SvelteKit server routes, Supabase (PostgreSQL + Auth + Storage)
+- **Job Processing**: BullMQ workers on Railway
+- **AI/ML**: Google Imagen 3, Bria RMBG 2.0, Anthropic Claude (image analysis)
+- **Deployment**: Railway (app + workers), Cloudflare (CDN/WAF)
+- **Payments**: Stripe
+
+## Key URLs
+
+| Page | URL | Description |
+|------|-----|-------------|
+| App | https://swiftlist.app | Main application |
+| Marketing | https://heyswiftlist.com | Marketing landing page |
+| Vibes | https://swiftlist.app/presets | Browse style presets |
+| Dashboard | https://swiftlist.app/dashboard | User dashboard (authenticated) |
+| Analytics | https://swiftlist.app/analytics | Creator analytics (authenticated) |
+| FAQ | https://swiftlist.app/faq | Frequently asked questions |
+| Terms | https://swiftlist.app/terms | Terms of service |
+| Privacy | https://swiftlist.app/privacy | Privacy policy |
+
+## Competitive Positioning
+
+SwiftList is NOT a general photo editor. It is specifically built for e-commerce product photography automation. Key differentiators:
+- Purpose-built for marketplace sellers (not photographers or designers)
+- AI-first workflow (not manual editing with AI assist)
+- Multi-marketplace export in one job
+- Community Vibes marketplace with creator royalties
+- CleanEdge Intelligence for jewelry-grade edge quality
+
+## Contact
+- Support: support@swiftlist.com

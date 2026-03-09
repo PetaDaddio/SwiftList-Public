@@ -1,0 +1,55 @@
+# SwiftList
+
+> AI-powered product image automation for e-commerce sellers
+
+SwiftList transforms product photos into marketplace-ready images using AI. Upload one photo and get professionally styled images for Etsy, Shopify, Amazon, eBay, Poshmark, and Facebook Marketplace — in one job.
+
+## Core Features
+
+- **CleanEdge Intelligence**: 7-agent AI pipeline for background removal with edge-perfect cutouts, optimized for jewelry, clothing, and small goods
+- **Lifestyle Scenes**: AI-generated lifestyle backgrounds that match your brand aesthetic using Google Imagen 3
+- **Vibes Marketplace**: Community-created style presets (called "Vibes") for consistent product photography across listings
+- **Batch Processing**: Process multiple product images in a single job with consistent styling
+- **Multi-Marketplace Export**: Automatic sizing for 6 marketplaces (Etsy, Shopify, Amazon, eBay, Poshmark, Facebook)
+- **Sparks Royalty System**: Earn credits when other sellers use your published Vibes
+
+## Who It's For
+
+SwiftList is built for makers and small e-commerce sellers:
+- Etsy sellers (jewelry, vintage, handmade)
+- Shopify store owners
+- Amazon FBA sellers
+- Poshmark and eBay resellers
+- Anyone selling physical products online who needs professional product photography without a studio
+
+## How It Works
+
+1. **Upload**: Upload your product photo (JPG, PNG, or WebP, up to 10MB)
+2. **Choose a Vibe**: Select from 38+ curated AI style presets or browse community-created Vibes
+3. **Process**: SwiftList's AI pipeline removes backgrounds, generates scenes, and optimizes images
+4. **Download**: Get marketplace-ready images sized for your selling platforms
+
+## Pricing
+
+- **Starter**: Free tier with limited credits
+- **Pro**: $19/month for regular sellers
+- **Business**: $49/month for high-volume sellers
+
+## Technology
+
+- Built with SvelteKit, Supabase, and deployed on Railway
+- AI models: Google Imagen 3 for scene generation, Bria RMBG 2.0 for background removal, Claude for image analysis
+- CleanEdge Intelligence uses a 7-agent pipeline for edge detection and refinement
+
+## Links
+
+- Website: https://swiftlist.app
+- Marketing: https://heyswiftlist.com
+- Vibes Marketplace: https://swiftlist.app/presets
+- FAQ: https://swiftlist.app/faq
+- Terms: https://swiftlist.app/terms
+- Privacy: https://swiftlist.app/privacy
+
+## Contact
+
+- Support: support@swiftlist.com

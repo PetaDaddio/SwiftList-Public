@@ -1,0 +1,85 @@
+# SwiftList CI Pipeline
+# Runs on every push and PR to main
+# Checks: type safety, tests, dependency audit, secret scanning
+
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  lint-and-typecheck:
+    name: TypeScript & Lint
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: apps/swiftlist-app-svelte
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: apps/swiftlist-app-svelte/package-lock.json
+
+      - run: npm ci
+
+      - name: TypeScript type check
+        run: npx svelte-check --tsconfig ./tsconfig.json
+
+  test:
+    name: Tests
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: apps/swiftlist-app-svelte
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: apps/swiftlist-app-svelte/package-lock.json
+
+      - run: npm ci
+
+      - name: Run tests
+        run: npx vitest run
+
+  audit:
+    name: Dependency Audit
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: apps/swiftlist-app-svelte
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: apps/swiftlist-app-svelte/package-lock.json
+
+      - run: npm ci
+
+      - name: Check for high/critical vulnerabilities
+        run: npm audit --omit=dev --audit-level=high
+
+  secret-scan:
+    name: Secret Scanning
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Full history for secret scanning
+
+      - name: Scan for secrets with Gitleaks
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
