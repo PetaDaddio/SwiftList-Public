@@ -53,10 +53,9 @@ SwiftList/
 │   └── workflows/                 # Workflow implementations
 ├── docs/                          # Architecture documentation
 │   ├── TDD_MASTER_v4.0.md        # Technical Design Document (source of truth)
-│   ├── security/                  # Security protocols and runbooks
-│   └── rollbacks/                 # Proven rollback snapshots
+│   └── mission-control/           # Workflow dashboard specs
 ├── .github/workflows/ci.yml      # CI pipeline
-└── .claude/CLAUDE.md              # Security-first development protocol
+└── .env.example                   # Environment variable template
 ```
 
 ---
@@ -109,7 +108,7 @@ Google Gemini 3 (Imagen) generates lifestyle scenes from product photos — flat
 - **Secret Scanning** — Gitleaks in CI, pre-commit hook on local dev
 - **Error Handling** — Safe error messages (no stack traces), Sentry tracking
 
-See [.claude/CLAUDE.md](.claude/CLAUDE.md) for the full security protocol.
+See the Security section above for an overview of our security practices.
 
 ---
 
@@ -155,8 +154,7 @@ GitHub Actions runs on every push and PR to `main`:
 | Document | Purpose |
 |----------|---------|
 | [TDD v4.1](docs/TDD_MASTER_v4.0.md) | Master architecture bible — all technical decisions |
-| [.claude/CLAUDE.md](.claude/CLAUDE.md) | Security protocol, debugging rules, coding standards |
-| [docs/security/](docs/security/) | Security runbooks and audit findings |
+| [CONTRIBUTING.md](CONTRIBUTING.md) | Development standards and security checklist |
 | [workers/ARCHITECTURE.md](workers/ARCHITECTURE.md) | Worker infrastructure and deployment |
 
 ---
